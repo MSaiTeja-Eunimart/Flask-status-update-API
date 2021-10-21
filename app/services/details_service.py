@@ -1,9 +1,14 @@
+from flask.json import jsonify
 from app.utils.db import *
 from flask_sqlalchemy import SQLAlchemy
 from app.model.details import Details1
 from api import db
 import datetime
 import pytz
+import mysql.connector
+import smtplib, ssl
+import schedule
+import time
 
 class Details(db.Model):
     def json(self):
@@ -24,3 +29,27 @@ class Details(db.Model):
             return 1;
         else:
             return 0;
+
+    def send_mail(email):
+        s = smtplib.SMTP('smtp.gmail.com', 587)
+        s.starttls()
+        s.login("xabc0604@gmail.com", "Ethicalhacking@9")
+        message = "Kindly fill the status !!"
+        s.sendmail("xabc0604@gmail.com", email, message)
+        print("Email sent to ", email)
+        s.quit()
+        return None;
+    
+    
+    def check_database():
+        l=[Details.json(details) for details in Details1.query.all()]
+        for i in l:
+            # print(i)
+            print(i['User_mail'],i['Status'])
+            if(i['Status']==None):
+                Details.send_mail(i['User_mail'])   
+                return jsonify({"MSG":"Email sent!!"})
+                
+
+    # def check_status():
+    #     schedule.every(1).minutes.do(check_database)

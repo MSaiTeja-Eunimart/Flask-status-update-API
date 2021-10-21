@@ -34,3 +34,11 @@ def update(id):
             return {"MSG":"Status is accepted / rejected can not change"}
     except:
         return sys.exc_info()[0]
+
+
+@app.route('/check_email',methods=['GET'])
+def checkEmail():
+    return Details.check_database()
+    #check_status()
+    # while True:
+    #     schedule.run_pending()
