@@ -9,6 +9,7 @@ import mysql.connector
 import smtplib, ssl
 import schedule
 import time
+from email.message import EmailMessage
 
 class Details(db.Model):
     def json(self):
@@ -30,12 +31,29 @@ class Details(db.Model):
         else:
             return 0;
 
-    def send_mail(email):
+    def send_mail(email,id):
+        msg = EmailMessage()
+        msg['Subject'] = "Check out and fill in the status" 
+        msg['From'] = "xabc0604@gmail.com"
+        msg['To'] = email
+        msg.set_content("Kindly fill the status !!")
+
+        msg.add_alternative("""\
+            <html>
+                <body>
+                    <h1>The button Element</h1>
+                    <button type="button" onclick=yfunc()>Accept the request</button>
+                    <br><br>
+                    <button type="button" onclick="alert("Hello World!")">Reject the request</button>
+                </body>
+            </html>
+        """,subtype='html')
+
         s = smtplib.SMTP('smtp.gmail.com', 587)
         s.starttls()
         s.login("xabc0604@gmail.com", "Ethicalhacking@9")
-        message = "Kindly fill the status !!"
-        s.sendmail("xabc0604@gmail.com", email, message)
+        s.send_message(msg)
+
         print("Email sent to ", email)
         s.quit()
         return None;
@@ -47,8 +65,8 @@ class Details(db.Model):
             # print(i)
             print(i['User_mail'],i['Status'])
             if(i['Status']==None):
-                Details.send_mail(i['User_mail'])   
-                return jsonify({"MSG":"Email sent!!"})
+                Details.send_mail(i['User_mail'],i['id'])   
+        return jsonify({"MSG":"Email sent!!"})
                 
 
     # def check_status():
